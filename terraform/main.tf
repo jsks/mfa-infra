@@ -8,11 +8,6 @@ terraform {
   }
 }
 
-data "openstack_compute_flavor_v2" "tiny" {
-  vcpus = 1
-  ram   = 512
-}
-
 resource "openstack_networking_secgroup_v2" "secgroup" {
   name        = "SecurityLake"
   description = "Security group"
@@ -35,12 +30,12 @@ resource "openstack_networking_floatingip_v2" "public_ip" {
 resource "openstack_blockstorage_volume_v2" "db_vol" {
   name        = "db_vol"
   description = "Block storage for PostgreSQL"
-  size        = 10
+  size        = 500
 }
 
 resource "openstack_compute_instance_v2" "app_server" {
   name            = "app-server"
-  flavor_id       = data.openstack_compute_flavor_v2.tiny.id
+  flavor_id       = data.openstack_compute_flavor_v2.medium_highcpu.id
   image_name      = "Debian 10 (Buster) - latest"
   security_groups = ["${openstack_networking_secgroup_v2.secgroup.name}"]
   user_data       = file("./user_data.yaml")
