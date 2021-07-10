@@ -1,0 +1,5 @@
+app-cred-terraform-key-openrc.sh
+
+*.terraform*
+*.tfstate
+*.tfstate.backup
