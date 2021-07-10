@@ -17,16 +17,19 @@
   template:
     src: pg_backup.sh.j2
     dest: /usr/local/bin/pg_backup.sh
+    mode: 0755
 
 - name: Copy pg_backup timer file
   copy: 
     src: pg_backup.timer
     dest: /usr/local/lib/systemd/system/pg_backup.timer
+    mode: 0744
 
 - name: Copy pg_backup service file
   template:
     src: pg_backup.service.j2
     dest: /usr/local/lib/systemd/system/pg_backup.service
+    mode: 0744
 
 - name: Enable pg_backup timer
   systemd:
