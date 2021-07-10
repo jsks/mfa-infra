@@ -1,0 +1,8 @@
+[Unit]
+Description=PostgreSQL backup service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/pg_backup.sh {{ backup_dir }}
+User={{ pg_backup_user }}
+Group={{ pg_backup_group }}

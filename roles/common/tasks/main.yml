@@ -1,0 +1,39 @@
+---
+- name: Upgrade system
+  apt:
+    update-cache: yes
+    upgrade: yes
+
+- name: Install dev packages
+  apt:
+    pkg:
+      - gpg
+      - htop
+      - ncurses-term
+      - zstd
+
+- name: Set defaults for bash
+  blockinfile:
+    path: /home/{{ ansible_user }}/.bashrc
+    block: |
+      shopt -s autocd
+      bind '"\e[A": history-search-backward'
+      bind '"\e[B": history-search-forward'
+      alias l="ls -a --color"
+      alias ll="ls -lh --color"
+      alias s!="sudo"
+      alias v="vim"
+
+- name: sshd configuration
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  loop:
+    - { regexp: '^#?MaxAuthTries', line: 'MaxAuthTries 3' }
+    - { regexp: '^#?PasswordAuthentication', line: 'PasswordAuthentication no' }
+    - { regexp: '^#?ChallengeResponseAuthentication', line: 'ChallengeResponseAuthentication no' }
+  notify:
+    - Restart sshd
+
+- include: unattended-upgrades.yml

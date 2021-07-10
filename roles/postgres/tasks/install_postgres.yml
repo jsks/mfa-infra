@@ -1,0 +1,28 @@
+---
+- name: Add apt key for Postgres
+  apt_key:
+    url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
+    keyring: /etc/apt/trusted.gpg.d/debian.gpg
+
+- name: Add deb repo for Postgres
+  apt_repository:
+    filename: pgdg.list
+    repo: deb http://apt.postgresql.org/pub/repos/apt buster-pgdg main
+    update_cache: yes
+
+- name: Install postgres
+  apt:
+    pkg:
+      - acl
+      - libpq-dev
+      - postgresql-{{ postgres_version }}
+      - postgresql-client-{{ postgres_version }}
+      - python3-psycopg2
+
+- name: Set password encryption to scram-sha-256 for Postgres
+  lineinfile:
+    path: /etc/postgresql/13/main/postgresql.conf
+    regexp: '^#?password_encryption'
+    line: "password_encryption = scram-sha-256"
+  notify:
+    - Restart postgres

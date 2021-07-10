@@ -1,0 +1,9 @@
+[Unit]
+Description=PostgreSQL backup timer
+
+[Timer]
+OnCalendar=weekly
+Persistent=true
+
+[Wanted]
+WantedBy=timers.target

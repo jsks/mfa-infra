@@ -1,4 +1,6 @@
 app-cred-terraform-key-openrc.sh
+inventory
+project.org
 
 *.terraform*
 *.tfstate

@@ -1,0 +1,36 @@
+---
+- name: Create systemd directory for pg_backup files
+  file:
+    path: /usr/local/lib/systemd/system
+    state: directory
+    recurse: yes
+
+- name: Create backup directory
+  file:
+    path: "{{ backup_dir }}"
+    state: directory
+    owner: postgres
+    group: postgres
+    recurse: yes
+
+- name: Copy pg_backup script
+  template:
+    src: pg_backup.sh.j2
+    dest: /usr/local/bin/pg_backup.sh
+
+- name: Copy pg_backup timer file
+  copy: 
+    src: pg_backup.timer
+    dest: /usr/local/lib/systemd/system/pg_backup.timer
+
+- name: Copy pg_backup service file
+  template:
+    src: pg_backup.service.j2
+    dest: /usr/local/lib/systemd/system/pg_backup.service
+
+- name: Enable pg_backup timer
+  systemd:
+    daemon_reload: yes
+    name: pg_backup.timer
+    state: started
+    enabled: yes

@@ -1,0 +1,25 @@
+---
+- name: Create data directory for Postgres
+  file:
+    path: "{{ data_dir }}"
+    state: directory
+    owner: postgres
+    group: postgres
+    recurse: yes
+
+- name: Recreate default Postgres cluster
+  shell: |
+    set -e
+    cluster_dir=$(pg_lsclusters -h | awk '{print $6}')
+
+    if [[ -z "$cluster_dir" ]]; then
+      pg_createcluster -d {{ data_dir }} --start 13 main
+    elif [[ "$cluster_dir" != "/mnt/data" ]]; then
+      pg_dropcluster --stop 13 main
+      pg_createcluster -d {{ data_dir }} --start 13 main
+    fi
+
+    exit 0
+  args:
+    executable: /bin/bash
+

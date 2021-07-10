@@ -1,0 +1,9 @@
+#!/bin/sh
+
+if [ ! -d "$1" ]; then
+    printf "Invalid backup directory: $1\n" >&2
+    exit 127
+fi
+
+backup="$1/db_$(date +'%Y-%m-%d').zst"
+pg_dump -d {{ db_name }} -w -Fc -Z 0 | zstdmt -T0 -16 > $backup

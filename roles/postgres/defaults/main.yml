@@ -1,0 +1,8 @@
+---
+postgres_version: 13
+pg_user: dev
+db_name: db
+data_dir: /mnt/data
+backup_dir: /mnt/backup
+pg_backup_user: postgres
+pg_backup_group: postgres
