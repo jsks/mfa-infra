@@ -5,6 +5,7 @@ on:
     branches: [ master ]
     paths:
       - Dockerfile
+  workflow_dispatch:
 
 jobs:
   push:
@@ -21,7 +22,7 @@ jobs:
         run: docker build -t racket-build .
 
       - name: Log in to container registry
-        run: "echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --pasword-stdin"
+        run: "echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin"
 
       - name: Push image to registry
         run: |
