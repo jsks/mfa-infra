@@ -6,7 +6,7 @@ resource "openstack_blockstorage_volume_v2" "db_vol" {
 
 resource "openstack_compute_instance_v2" "app_server" {
   name            = "app-server"
-  flavor_id       = data.openstack_compute_flavor_v2.medium_highcpu.id
+  flavor_name     = "ssc.medium.highcpu"
   image_name      = "Debian 10 (Buster) - latest"
   security_groups = ["${openstack_networking_secgroup_v2.secgroup.name}"]
   user_data       = file("./user_data.yaml")

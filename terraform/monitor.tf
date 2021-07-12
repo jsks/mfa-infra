@@ -1,6 +1,6 @@
 resource "openstack_compute_instance_v2" "monitor" {
   name            = "monitor"
-  flavor_id       = data.openstack_compute_flavor_v2.small.id
+  flavor_name     = "ssc.small"
   image_name      = "Debian 10 (Buster) - latest"
   security_groups = ["${openstack_networking_secgroup_v2.secgroup.name}"]
   user_data       = file("./user_data.yaml")
