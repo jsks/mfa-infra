@@ -1,3 +1,4 @@
+# Container image for compiling racket files
 FROM debian:buster-slim
 
 ARG RACKET_VERSION=8.1
