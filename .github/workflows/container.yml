@@ -1,0 +1,30 @@
+name: Racket compiler container image
+
+on:
+  push:
+    branches: [ master ]
+    paths:
+      - Dockerfile
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      content: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Build docker image
+        run: docker build -t racket-build .
+
+      - name: Log in to container registry
+        run: "echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --pasword-stdin"
+
+      - name: Push image to registry
+        run: |
+          target=ghcr.io/${{ github.repository_owner }}/racket-build
+          docker tag racket-builder $target
+          docker push $target
