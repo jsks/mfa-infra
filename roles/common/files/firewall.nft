@@ -6,14 +6,18 @@ table inet TinyWall  {
     chain input {
         type filter hook input priority 0; policy drop;
 
-        ip protocol icmp limit rate 4/second accept
-        ip6 nexthdr ipv6-icmp limit rate 4/second accept
-        ip protocol igmp limit rate 4/second accept
+        ip protocol icmp icmp type echo-request limit rate 4/second accept
+        ip protocol icmp icmp type echo-request counter drop
+        ip6 nexthdr icmpv6 icmpv6 type echo-request limit rate 4/second accept
+        ip6 nexthdr icmpv6 icmpv6 type echo-request counter drop
 
         ct state related,established accept 
         ct state invalid drop
 
         iifname "lo" accept 
+
+        ip protocol icmp icmp type { destination-unreachable, router-advertisement, time-exceeded, parameter-problem } accept
+        ip6 nexthdr icmpv6 icmpv6 type { destination-unreachable, packet-too-big, time-exceeded, parameter-problem, echo-reply, nd-router-advert, nd-neighbor-solicit, nd-neighbor-advert } accept
 
         tcp dport ssh accept comment "SSH port 22"
     }
