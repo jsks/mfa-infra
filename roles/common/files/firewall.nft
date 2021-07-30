@@ -1,0 +1,30 @@
+#!/usr/bin/nft -f
+
+flush ruleset
+
+table inet TinyWall  {
+    chain input {
+        type filter hook input priority 0; policy drop;
+
+        ip protocol icmp limit rate 4/second accept
+        ip6 nexthdr ipv6-icmp limit rate 4/second accept
+        ip protocol igmp limit rate 4/second accept
+
+        ct state related,established accept 
+        ct state invalid drop
+
+        iifname "lo" accept 
+
+        tcp dport ssh accept comment "SSH port 22"
+    }
+
+    chain forward {
+        type filter hook forward priority 0; policy drop;
+    }
+
+    chain output {
+        type filter hook output priority 0; policy accept;
+    }
+}
+
+

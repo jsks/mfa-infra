@@ -4,12 +4,14 @@
     update-cache: yes
     upgrade: yes
 
-- name: Install dev packages
+- name: Install base packages
   apt:
     pkg:
       - gpg
       - htop
       - ncurses-term
+      - nftables
+      - zsh
       - zstd
 
 - name: Set defaults for bash
@@ -17,6 +19,7 @@
     path: /home/{{ ansible_user }}/.bashrc
     block: |
       shopt -s autocd
+      set -o vi
       bind '"\e[A": history-search-backward'
       bind '"\e[B": history-search-forward'
       alias l="ls -a --color"
@@ -35,5 +38,18 @@
     - { regexp: '^#?ChallengeResponseAuthentication', line: 'ChallengeResponseAuthentication no' }
   notify:
     - Restart sshd
+
+- name: Start nftables
+  service:
+    name: nftables
+    enabled: yes
+    state: started
+
+- name: Create nftables firewall
+  script:
+    cmd: roles/common/files/firewall.nft
+  args:
+    executable: "/usr/sbin/nft -f"
+
 
 - include: unattended-upgrades.yml
