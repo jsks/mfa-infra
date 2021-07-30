@@ -19,10 +19,5 @@
       - postgresql-client-{{ postgres_version }}
       - python3-psycopg2
 
-- name: Set password encryption to scram-sha-256 for Postgres
-  lineinfile:
-    path: /etc/postgresql/13/main/postgresql.conf
-    regexp: '^#?password_encryption'
-    line: "password_encryption = scram-sha-256"
-  notify:
-    - Restart postgres
+- name: Open firewall exception for Postgres
+  command: nft add rule inet TinyWall input ip saddr 10.35.3.0/24 tcp dport 5432 accept

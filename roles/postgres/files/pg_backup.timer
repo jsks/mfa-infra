@@ -5,5 +5,5 @@ Description=PostgreSQL backup timer
 OnCalendar=weekly
 Persistent=true
 
-[Wanted]
+[Install]
 WantedBy=timers.target

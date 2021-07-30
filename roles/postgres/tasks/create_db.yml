@@ -1,9 +1,38 @@
 ---
-- name: Create app user
+- name: Create data directory for Postgres
+  file:
+    path: "{{ data_dir }}"
+    state: directory
+    owner: postgres
+    group: postgres
+    recurse: yes
+
+- name: Create Postgres cluster
+  shell: |
+    set -eo pipefail
+    cluster_dir=$(pg_lsclusters -h | awk '{print $6}')
+
+    if [[ "$cluster_dir" != "{{ data_dir }}" ]]; then
+      pg_dropcluster --stop 13 main
+
+      pg_createcluster -d {{ data_dir }} --start 13 main \
+        -o listen_addresses='*' \
+        -o password_encryption=scram-sha-256 \
+        -o shared_buffers=1GB \
+        -o effective_cache_size=2GB \
+        -o work_mem=32MB
+    fi
+
+    exit 0
+  args:
+    executable: /bin/bash
+  tags: skip_ansible_lint
+
+- name: Create default user
   become_user: postgres
   postgresql_user:
     name: "{{ pg_user }}"
-    password: "md515fef2b9ecf269085786d46bc504ee77"
+    password: "{{ lookup('community.general.passwordstore', 'dev/mfa-pg create=true') }}"
     conn_limit: 5
     role_attr_flags: CREATEDB,LOGIN
 
@@ -12,4 +41,13 @@
   postgresql_db:
     name: "{{ db_name }}"
     encoding: UTF-8
-    owner: "{{ pg_user }}"
+    user: "{{ pg_user }}"
+
+- name: Configure access for default user
+  postgresql_pg_hba:
+    dest: /etc/postgresql/13/main/pg_hba.conf
+    address: samenet
+    contype: host
+    databases: "{{ db_name }}"
+    method: scram-sha-256
+    users: "{{ pg_user }}"

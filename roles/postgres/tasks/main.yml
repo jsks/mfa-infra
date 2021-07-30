@@ -1,5 +1,4 @@
 ---
 - include: install_postgres.yml
-- include: init_db.yml
 - include: create_db.yml
 - include: pg_backup.yml
