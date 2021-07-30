@@ -3,12 +3,12 @@
   hosts: all
   become: yes
   roles:
-    - common
+    - { role: 'common', tags: 'common' }
 
 - name: App/DB setup
   hosts: appserver
   become: yes
   roles:
-    - postgres
+    - { role: 'postgres', tags: 'postgres' }
 
 
