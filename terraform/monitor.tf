@@ -3,7 +3,7 @@ resource "openstack_compute_instance_v2" "monitor" {
   flavor_name     = "ssc.small"
   image_name      = "Debian 10 (Buster) - latest"
   security_groups = ["${openstack_networking_secgroup_v2.secgroup.name}"]
-  user_data       = file("./user_data.yaml")
+  user_data       = file("./monitor_data.yaml")
   network {
     name = "SNIC 2021/18-3 Internal IPv4 Network"
   }
@@ -17,5 +17,3 @@ resource "openstack_compute_floatingip_associate_v2" "attach_ip" {
 output "float_ip" {
   value = openstack_networking_floatingip_v2.public_ip.address
 }
-
-

@@ -11,6 +11,7 @@ mounts:
 
 locale: en_US.UTF-8
 
+package_reboot_if_required: true
 package_update: true
 package_upgrade: true
 packages:

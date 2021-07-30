@@ -9,7 +9,7 @@ resource "openstack_compute_instance_v2" "app_server" {
   flavor_name     = "ssc.medium.highcpu"
   image_name      = "Debian 10 (Buster) - latest"
   security_groups = ["${openstack_networking_secgroup_v2.secgroup.name}"]
-  user_data       = file("./user_data.yaml")
+  user_data       = file("./appserver_data.yaml")
   network {
     name = "SNIC 2021/18-3 Internal IPv4 Network"
   }
