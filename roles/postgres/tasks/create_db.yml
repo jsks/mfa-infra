@@ -7,26 +7,25 @@
     group: postgres
     recurse: yes
 
+- name: Check current Postgres cluster
+  command: pg_lsclusters -h -j
+  register: pg_cluster_chk
+  ignore_errors: true
+  changed_when: false
+
 - name: Create Postgres cluster
   shell: |
-    set -eo pipefail
-    cluster_dir=$(pg_lsclusters -h | awk '{print $6}')
+    pg_dropcluster --stop 13 main
 
-    if [[ "$cluster_dir" != "{{ data_dir }}" ]]; then
-      pg_dropcluster --stop 13 main
-
-      pg_createcluster -d {{ data_dir }} --start 13 main \
-        -o listen_addresses='*' \
-        -o password_encryption=scram-sha-256 \
-        -o shared_buffers=1GB \
-        -o effective_cache_size=2GB \
-        -o work_mem=32MB
-    fi
-
-    exit 0
+    pg_createcluster -d {{ data_dir }} --start 13 main \
+      -o listen_addresses='*' \
+      -o password_encryption=scram-sha-256 \
+      -o shared_buffers=1GB \
+      -o effective_cache_size=2GB \
+      -o work_mem=32MB
   args:
     executable: /bin/bash
-  tags: skip_ansible_lint
+  when: (pg_cluster_chk.stdout | from_json | first)["pgdata"] != data_dir|string
 
 - name: Create default user
   become_user: postgres
@@ -41,7 +40,7 @@
   postgresql_db:
     name: "{{ db_name }}"
     encoding: UTF-8
-    user: "{{ pg_user }}"
+    owner: "{{ pg_user }}"
 
 - name: Configure access for default user
   postgresql_pg_hba:

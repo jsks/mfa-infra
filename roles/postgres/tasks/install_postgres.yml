@@ -19,5 +19,19 @@
       - postgresql-client-{{ postgres_version }}
       - python3-psycopg2
 
+- name: Check if firewall exception for Postgres already exists
+  shell: |
+    set -eo pipefail
+    nft -a list table inet TinyWall | grep -q 'Postgres port 5432'
+  register: pg_nf_result
+  args:
+    executable: /bin/bash
+  ignore_errors: true
+  changed_when: false
+
 - name: Open firewall exception for Postgres
-  command: nft add rule inet TinyWall input ip saddr 10.35.3.0/24 tcp dport 5432 accept
+  shell: |
+    echo no
+    nft add rule inet TinyWall input ip saddr 10.35.3.0/24 tcp dport 5432 accept \
+      comment \"Postgres port 5432\"
+  when: pg_nf_result is failed
