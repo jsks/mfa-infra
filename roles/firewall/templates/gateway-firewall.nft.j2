@@ -1,0 +1,53 @@
+#!/usr/bin/nft -f
+
+flush ruleset
+
+table inet TinyWall  {
+    chain input {
+        type filter hook input priority 0; policy drop;
+
+        ip protocol icmp icmp type echo-request limit rate 4/second accept
+        ip protocol icmp icmp type echo-request counter drop
+        ip6 nexthdr icmpv6 icmpv6 type echo-request limit rate 4/second accept
+        ip6 nexthdr icmpv6 icmpv6 type echo-request counter drop
+
+        ct state related,established accept
+        ct state invalid drop
+
+        iifname "lo" accept
+
+        ip protocol icmp icmp type { destination-unreachable, router-advertisement, time-exceeded, parameter-problem } accept
+        ip6 nexthdr icmpv6 icmpv6 type { destination-unreachable, packet-too-big, time-exceeded, parameter-problem, echo-reply, nd-router-advert, nd-neighbor-solicit, nd-neighbor-advert } accept
+
+        tcp dport ssh accept comment "SSH port 22"
+        tcp dport http ip saddr 10.35.1.0/24 accept comment "Nginx"
+        udp dport 51820 accept comment "Wireguard"
+        iifname "wg0" tcp dport domain accept comment "Dnsmasq"
+        iifname "wg0" udp dport domain accept comment "Dnsmasq"
+    }
+
+    chain output {
+        type filter hook output priority 0; policy accept;
+    }
+
+    chain forward {
+        type filter hook forward priority 0; policy drop;
+
+        ct state related,established accept
+        ct state invalid drop
+
+        iifname "wg0" oifname "eth0" ip daddr {{ project_subnet }}/24 ct state new accept
+    }
+}
+
+table ip TinyRouter {
+    chain prerouting {
+        type nat hook prerouting priority 0;
+    }
+
+    chain postrouting {
+        type nat hook postrouting priority 100;
+
+        oifname "eth0" ip saddr 10.35.1.0/24 masquerade
+    }
+}
