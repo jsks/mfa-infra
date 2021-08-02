@@ -1,0 +1,7 @@
+[global]
+    bind socket to IP = {{ ansible_default_ipv4.address }}
+    run as user = netdata
+    web files owner = root
+    web files group = root
+    update every = 3
+    dbengine multihost disk space = 2024

@@ -1,0 +1,23 @@
+---
+- name: Install netdata
+  apt:
+    update-cache: yes
+    pkg: netdata
+
+- name: Configure Netdata
+  template:
+    src: netdata.conf.j2
+    dest: /etc/netdata/netdata.conf
+    owner: root
+    group: root
+    mode: u=wrx,g=rx,o=r,+x
+  notify: Restart Netdata
+
+- name: Add health check notifications for Netdata
+  template:
+    src: health_alarm_notify.conf.j2
+    dest: /etc/netdata/health_alarm_notify.conf
+    owner: root
+    group: root
+    mode: u=wrx,g=rx,o=r,+x
+  notify: Restart Netdata
