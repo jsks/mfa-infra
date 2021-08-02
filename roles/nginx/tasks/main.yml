@@ -1,0 +1,23 @@
+---
+- name: Install nginx
+  apt:
+    update_cache: yes
+    name: nginx
+
+- name: Disable default site for nginx
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+
+- name: Add nginx configuration
+  template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/sites-available/netdata
+  notify: Reload nginx
+
+- name: Enable nginx site config
+  file:
+    src: /etc/nginx/sites-available/netdata
+    dest: /etc/nginx/sites-enabled/netdata
+    state: link
+  notify: Reload nginx
