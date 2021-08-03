@@ -1,0 +1,22 @@
+#cloud-config
+
+locale: en_US.UTF-8
+
+package_reboot_if_required: true
+package_update: true
+package_upgrade: true
+packages:
+  - ansible
+
+manage_etc_hosts: false
+fqdn: gateway.intranet
+hostname: gateway.intranet
+
+users:
+  - name: dev
+    lock-passwd: true
+    groups: [ adm, netdev, sudo ]
+    sudo: [ "ALL=(ALL) NOPASSWD:ALL" ]
+    shell: /bin/bash
+    ssh_authorized_keys:
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEL/wJFRORuV2p22o4++WEI8/CT7ZDwv+KUhXmNxUprM cloud@ohr
