@@ -21,3 +21,8 @@
     group: root
     mode: u=wrx,g=rx,o=r,+x
   notify: Restart Netdata
+
+- name: Disable Netdata telemetry
+  file:
+    path: /etc/netdata/.opt-out-from-anonymous-statistics
+    state: touch
