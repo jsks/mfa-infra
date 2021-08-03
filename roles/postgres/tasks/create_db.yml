@@ -16,6 +16,7 @@
 - name: Create Postgres cluster
   shell: |
     pg_dropcluster --stop 13 main
+    rm -rf {{ data_dir }}/*
 
     pg_createcluster -d {{ data_dir }} --start 13 main \
       -o listen_addresses='*' \
@@ -25,7 +26,7 @@
       -o work_mem=32MB
   args:
     executable: /bin/bash
-  when: (pg_cluster_chk.stdout | from_json | first)["pgdata"] != data_dir|string
+  when: pg_cluster_chk.stdout == "[]" or (pg_cluster_chk.stdout | from_json | first)["pgdata"] != data_dir|string
 
 - name: Create default user
   become_user: postgres
