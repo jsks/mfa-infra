@@ -50,3 +50,4 @@
     databases: "{{ db_name }}"
     method: scram-sha-256
     users: "{{ pg_user }}"
+  notify: Reload postgres
