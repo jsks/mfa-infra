@@ -1,0 +1,58 @@
+---
+- name: Install kernel headers and dnsmasq for DNS
+  apt:
+    update_cache: yes
+    pkg:
+      - "linux-headers-{{ ansible_kernel }}"
+      - dnsmasq
+
+- name: Enable ipv4 forwarding
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: '1'
+    sysctl_set: yes
+
+- name: Populate /etc/hosts for DNS
+  lineinfile:
+    dest: /etc/hosts
+    line: "{{ hostvars[item].ansible_default_ipv4.address }} {{ hostvars[item].ansible_fqdn }}"
+  with_items: "{{ groups['all'] }}"
+  notify: Restart dnsmasq
+
+- name: Configure dnsmasq
+  copy:
+    src: dnsmasq.conf
+    dest: /etc/dnsmasq.conf
+    owner: root
+    group: root
+  notify: Restart dnsmasq
+
+- name: Add backports repository for wireguard
+  apt_repository:
+    repo: deb http://deb.debian.org/debian buster-backports main
+    update_cache: yes
+
+- name: Install wireguard
+  apt:
+    default_release: buster-backports
+    pkg:
+      - wireguard
+      - wireguard-dkms
+      - wireguard-tools
+
+- name: Copy wireguard config
+  template:
+    src: server-wg0.conf.j2
+    dest: /etc/wireguard/wg0.conf
+    mode: u=rw
+
+- name: Generate client config template
+  local_action: template src=client-wg0.conf.j2 dest=client-wg0.conf
+  become: no
+
+- name: Enable/start wireguard
+  service:
+    name: wg-quick@wg0
+    enabled: yes
+    state: started
+  notify: Restart dnsmasq

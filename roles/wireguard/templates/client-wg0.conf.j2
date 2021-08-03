@@ -1,0 +1,11 @@
+[Interface]
+Address = 10.35.1.2/32
+ListenPort = 51820
+PrivateKey = 
+DNS = 10.35.1.1
+
+[Peer] 
+Endpoint = {{ ansible_host }}:51820
+PublicKey = {{ lookup('passwordstore', 'wg/mfa-server subkey=PublicKey') }} 
+PresharedKey = {{ lookup('passwordstore', 'wg/mfa-client subkey=PresharedKey') }}
+AllowedIPs = 10.35.1.1/32,{{ project_subnet }}/24

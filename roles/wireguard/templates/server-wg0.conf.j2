@@ -1,0 +1,9 @@
+[Interface]
+PrivateKey = {{ lookup('passwordstore', 'wg/mfa-server') }}
+Address = 10.35.1.1/24
+ListenPort = 51820
+
+[Peer]
+PublicKey = {{ lookup('passwordstore', 'wg/mfa-client subkey=PublicKey') }}
+PreSharedKey = {{ lookup('passwordstore', 'wg/mfa-server subkey=PresharedKey') }}
+AllowedIPs = 10.35.1.2/32

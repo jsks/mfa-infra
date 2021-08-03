@@ -1,0 +1,6 @@
+---
+- name: Restart dnsmasq
+  service:
+    name: dnsmasq
+    enabled: yes
+    state: restarted
