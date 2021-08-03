@@ -9,7 +9,7 @@ resource "openstack_compute_instance_v2" "appserver" {
   flavor_name     = "ssc.medium.highcpu"
   image_name      = "Debian 10 (Buster) - latest"
   security_groups = ["${openstack_networking_secgroup_v2.secgroup.name}"]
-  user_data       = file("./appserver_data.yaml")
+  user_data       = data.template_cloudinit_config.cloud-config["appserver"].rendered
   network {
     name = var.network_name
   }

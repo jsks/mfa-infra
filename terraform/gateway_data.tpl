@@ -19,4 +19,4 @@ users:
     sudo: [ "ALL=(ALL) NOPASSWD:ALL" ]
     shell: /bin/bash
     ssh_authorized_keys:
-      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEL/wJFRORuV2p22o4++WEI8/CT7ZDwv+KUhXmNxUprM cloud@ohr
+      - ${public_key}
