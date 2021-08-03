@@ -1,3 +1,9 @@
+variable "network_name" {
+  type        = string
+  description = "Default network in OpenStack"
+  default     = "SNIC 2021/18-3 Internal IPv4 Network"
+}
+
 resource "openstack_networking_secgroup_v2" "secgroup" {
   name        = "SecurityLake"
   description = "Security group"
