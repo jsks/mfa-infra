@@ -1,15 +1,13 @@
 ---
 - name: Install netdata
   apt:
+    name: netdata
     update-cache: yes
-    pkg: netdata
 
 - name: Configure Netdata
   template:
     src: netdata.conf.j2
     dest: /etc/netdata/netdata.conf
-    owner: root
-    group: root
     mode: u=wrx,g=rx,o=r,+x
   notify: Restart Netdata
 
@@ -17,12 +15,11 @@
   template:
     src: health_alarm_notify.conf.j2
     dest: /etc/netdata/health_alarm_notify.conf
-    owner: root
-    group: root
     mode: u=wrx,g=rx,o=r,+x
   notify: Restart Netdata
 
 - name: Disable Netdata telemetry
   file:
     path: /etc/netdata/.opt-out-from-anonymous-statistics
+    mode: u=wrx,g=r,o=r
     state: touch

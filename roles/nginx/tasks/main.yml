@@ -13,6 +13,7 @@
   template:
     src: nginx.conf.j2
     dest: /etc/nginx/sites-available/netdata
+    mode: u=rw,g=r
   notify: Reload nginx
 
 - name: Enable nginx site config

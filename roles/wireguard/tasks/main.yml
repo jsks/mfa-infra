@@ -25,6 +25,7 @@
     dest: /etc/dnsmasq.conf
     owner: root
     group: root
+    mode: u=rw,g=r,o=r
   notify: Restart dnsmasq
 
 - name: Add backports repository for wireguard
@@ -47,8 +48,12 @@
     mode: u=rw
 
 - name: Generate client config template
-  local_action: template src=client-wg0.conf.j2 dest=client-wg0.conf
+  template:
+    src: client-wg0.conf.j2
+    dest: client-wg0.conf
+    mode: u=rw,g=rw,o=rw
   become: no
+  delegate_to: localhost
 
 - name: Enable/start wireguard
   service:
