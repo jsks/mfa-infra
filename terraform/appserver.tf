@@ -1,7 +1,7 @@
 resource "openstack_blockstorage_volume_v2" "db_vol" {
   name        = "db_vol"
   description = "Block storage for PostgreSQL"
-  size        = 500
+  size        = 900
 }
 
 resource "openstack_compute_instance_v2" "app_server" {
