@@ -21,7 +21,7 @@ table inet TinyWall  {
 
         tcp dport ssh accept comment "SSH port 22"
         tcp dport 19999 ip saddr {{ gateway_address }} accept comment "Netdata"
-        tcp dport 5432 ip saddr {{ project_subnet }} accept comment "Postgres"
+        tcp dport 5432 ip saddr {{ project_subnet }}/24 accept comment "Postgres"
     }
 
     chain output {
