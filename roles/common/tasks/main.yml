@@ -10,7 +10,6 @@
       - gpg
       - htop
       - ncurses-term
-      - nftables
       - zsh
       - zstd
 
@@ -38,18 +37,5 @@
     - { regexp: '^#?ChallengeResponseAuthentication', line: 'ChallengeResponseAuthentication no' }
   notify:
     - Restart sshd
-
-- name: Start nftables
-  service:
-    name: nftables
-    enabled: yes
-    state: started
-
-- name: Create nftables firewall
-  script:
-    cmd: roles/common/files/firewall.nft
-  args:
-    executable: "/usr/sbin/nft -f"
-
 
 - include: unattended-upgrades.yml
