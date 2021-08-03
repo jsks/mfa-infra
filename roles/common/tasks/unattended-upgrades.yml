@@ -39,6 +39,6 @@
   lineinfile:
     path: /etc/apt/apt.conf.d/50unattended-upgrades
     regexp: '^//Unattended-Upgrade::Mail '
-    line: Unattended-Upgrade::Mail "{{ email }}";
+    line: Unattended-Upgrade::Mail "{{ recipient_email }}";
 
 

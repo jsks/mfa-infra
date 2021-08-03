@@ -1,3 +1,7 @@
 ---
 ansible_user: dev
 ansible_python_interpreter: /usr/bin/python3
+recipient_email: "{{ lookup('pipe', 'git log -s --format=\"%ae\" | tail -n 1') }}"
+gateway_address: "{{ hostvars['gateway']['ansible_default_ipv4']['address'] }}"
+appserver_address: "{{ hostvars['appserver']['ansible_default_ipv4']['address'] }}"
+project_subnet: "{{ hostvars['gateway']['ansible_default_ipv4']['network'] }}"
