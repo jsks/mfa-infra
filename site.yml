@@ -4,11 +4,18 @@
   become: yes
   roles:
     - { role: 'common', tags: 'common' }
+    - { role: 'firewall', tags: 'firewall' }
 
 - name: App/DB setup
   hosts: appserver
   become: yes
   roles:
+    - { role: 'netdata', tags: 'netdata' }
     - { role: 'postgres', tags: 'postgres' }
 
-
+- name: Gatekeeper
+  hosts: gateway
+  become: yes
+  roles:
+    - { role: 'nginx', tags: 'nginx' }
+    - { role: 'wireguard', tags: 'wireguard' }
