@@ -1,9 +1,9 @@
 ---
-- name: Pre-seed domain name for postfix
+- name: Pre-seed domain name for Postfix
   debconf:
     name: postfix
     question: postfix/mailname
-    value: "{{ ansible_host }}"
+    value: "{{ ansible_fqdn }}"
     vtype: text
 
 - name: Pre-seed mailer type for postfix
@@ -12,6 +12,13 @@
     question: postfix/main_mailer_type
     value: Internet Site
     vtype: select
+
+- name: Pre-seed alias for postfix
+  debconf:
+    name: postfix
+    question: postfix/root_address
+    value: "{{ recipient_email }}"
+    vtype: text
 
 - name: Install Postfix
   apt:
@@ -27,18 +34,3 @@
     line: inet_interfaces = loopback-only
   notify:
     - Restart postfix
-
-- name: Install unattended upgrades
-  apt:
-    pkg:
-      - apt-listchanges
-      - debconf-utils
-      - unattended-upgrades
-
-- name: Configure unattended upgrades
-  lineinfile:
-    path: /etc/apt/apt.conf.d/50unattended-upgrades
-    regexp: '^//Unattended-Upgrade::Mail '
-    line: Unattended-Upgrade::Mail "{{ recipient_email }}";
-
-

@@ -7,11 +7,20 @@
 - name: Install base packages
   apt:
     pkg:
+      - apt-listchanges
+      - debconf-utils
       - gpg
       - htop
       - ncurses-term
+      - unattended-upgrades
       - zsh
       - zstd
+
+- name: Configure unattended upgrades
+  lineinfile:
+    path: /etc/apt/apt.conf.d/50unattended-upgrades
+    regexp: '^//Unattended-Upgrade::Mail '
+    line: "Unattended-Upgrade::Mail {{ recipient_email }};"
 
 - name: Set defaults for bash
   blockinfile:
@@ -38,5 +47,3 @@
     - { regexp: '^#?ChallengeResponseAuthentication', line: 'ChallengeResponseAuthentication no' }
   notify:
     - Restart sshd
-
-- include: unattended-upgrades.yml
