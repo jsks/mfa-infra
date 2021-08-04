@@ -34,7 +34,7 @@
     name: "{{ pg_user }}"
     password: "{{ lookup('community.general.passwordstore', 'dev/mfa-pg create=true') }}"
     conn_limit: 5
-    role_attr_flags: CREATEDB,LOGIN
+    role_attr_flags: CREATEDB,CREATEROLE,LOGIN
 
 - name: Create app DB in postgres
   become_user: postgres
