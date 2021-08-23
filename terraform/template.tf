@@ -5,8 +5,9 @@ locals {
 data "template_file" "cloud-template" {
   for_each = local.hosts
 
-  template = file("${each.key}_data.tpl")
+  template = file("user_data.tpl")
   vars = {
+    host       = "${each.key}"
     public_key = file("~/.ssh/mfa_ed25519.pub")
   }
 }

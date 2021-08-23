@@ -7,6 +7,9 @@ resource "openstack_compute_instance_v2" "gateway" {
   network {
     name = var.network_name
   }
+  lifecycle {
+    ignore_changes = [image_name]
+  }
 }
 
 resource "openstack_compute_floatingip_associate_v2" "attach_ip" {

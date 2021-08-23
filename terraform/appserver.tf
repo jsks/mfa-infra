@@ -13,6 +13,9 @@ resource "openstack_compute_instance_v2" "appserver" {
   network {
     name = var.network_name
   }
+  lifecycle {
+    ignore_changes = [image_name, user_data]
+  }
 }
 
 resource "openstack_compute_volume_attach_v2" "attach_vol" {
