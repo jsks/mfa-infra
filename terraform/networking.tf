@@ -43,6 +43,15 @@ resource "openstack_networking_secgroup_rule_v2" "wg_rule" {
   security_group_id = openstack_networking_secgroup_v2.secgroup.id
 }
 
+resource "openstack_networking_secgroup_rule_v2" "build-server" {
+  direction         = "ingress"
+  ethertype         = "IPv4"
+  protocol          = "tcp"
+  port_range_min    = 81
+  port_range_max    = 81
+  security_group_id = openstack_networking_secgroup_v2.secgroup.id
+}
+
 resource "openstack_networking_floatingip_v2" "public_ip" {
   pool = "Public External IPv4 Network"
 }

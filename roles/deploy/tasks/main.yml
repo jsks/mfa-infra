@@ -1,0 +1,75 @@
+---
+- name: Install nodejs --- should already be a dependency of NetData
+  apt:
+    update_cache: yes
+    name: nodejs
+
+- name: Create webhook group
+  group:
+    name: webhook
+
+- name: Create webhook user
+  user:
+    name: webhook
+    group: webhook
+    create_home: no
+    shell: /usr/sbin/nologin
+
+- name: Create download directory for webhook-server
+  file:
+    name: /var/github
+    state: directory
+    owner: webhook
+    mode: u=rw,g=rw,o=r
+
+- name: Create config directories
+  file:
+    name: "{{ item }}"
+    state: directory
+    mode: u=rw
+  loop:
+    - /etc/webhook-server
+    - /etc/mfa
+
+- name: Copy systemd files for release deployment
+  copy:
+    src: "{{ item }}"
+    dest: /usr/local/lib/systemd/system/{{ item }}
+    mode: 0600
+  loop:
+    - webhook-server.service
+    - deploy.service
+    - deploy.path
+  notify: Reload systemd
+
+- name: Copy deploy script
+  template:
+    src: deploy.sh.j2
+    dest: /usr/local/bin/deploy.sh
+    mode: u=rwx,g=rx,o=rx
+
+- name: Enable release deployment monitoring
+  systemd:
+    name: deploy.path
+    state: started
+    enabled: yes
+
+- name: Copy webhook-server config
+  template:
+    src: .env.json.j2
+    dest: /etc/webhook-server/.env.json
+    mode: 0600
+    owner: webhook
+
+- name: Copy webhook-server script
+  copy:
+    src: webhook-server.js
+    dest: /usr/local/bin/webhook-server.js
+    mode: u=rwx,g=rx,o=rx
+  notify: Restart webhook-server
+
+- name: Copy app access token
+  template:
+    src: twitter-token.j2
+    dest: /etc/mfa/twitter-token
+    mode: 0600

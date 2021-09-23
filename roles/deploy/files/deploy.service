@@ -1,0 +1,10 @@
+[Unit]
+Description=Installs release tarballs downloaded by webhook-server
+
+[Service]
+Type=oneshot
+WorkingDirectory=/var/github
+ExecStart=/usr/local/bin/deploy.sh
+
+[Install]
+WantedBy=multi-user.target

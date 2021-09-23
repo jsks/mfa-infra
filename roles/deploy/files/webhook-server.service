@@ -1,0 +1,13 @@
+[Unit]
+Description=Simple HTTP server for incoming GitHub webhooks
+After=network.target
+
+[Service]
+User=webhook
+Group=webhook
+Type=simple
+ExecStart=nodejs /usr/local/bin/webhook-server.js /etc/webhook-server/.env.json
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

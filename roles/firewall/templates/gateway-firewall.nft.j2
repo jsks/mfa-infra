@@ -21,6 +21,7 @@ table inet TinyWall  {
 
         tcp dport ssh accept comment "SSH port 22"
         tcp dport http ip saddr 10.35.1.0/24 accept comment "Nginx"
+        tcp dport 81 accept comment "Nginx - webhook-server"
         udp dport 51820 accept comment "Wireguard"
         iifname "wg0" tcp dport domain accept comment "Dnsmasq"
         iifname "wg0" udp dport domain accept comment "Dnsmasq"

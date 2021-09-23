@@ -13,6 +13,7 @@
   roles:
     - { role: 'netdata', tags: 'netdata' }
     - { role: 'postgres', tags: 'postgres' }
+    - { role: 'deploy', tags: 'deploy' }
 
 - name: Gatekeeper
   hosts: gateway

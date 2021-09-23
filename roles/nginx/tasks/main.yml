@@ -9,16 +9,22 @@
     path: /etc/nginx/sites-enabled/default
     state: absent
 
-- name: Add nginx configuration
+- name: Add nginx configurations
   template:
-    src: nginx.conf.j2
-    dest: /etc/nginx/sites-available/netdata
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
     mode: u=rw,g=r
+  with_items:
+    - { src: "netdata.conf.j2", dest: "/etc/nginx/sites-available/netdata" }
+    - { src: "webhook.conf.j2", dest: "/etc/nginx/sites-available/gh" }
   notify: Reload nginx
 
 - name: Enable nginx site config
   file:
-    src: /etc/nginx/sites-available/netdata
-    dest: /etc/nginx/sites-enabled/netdata
+    src: /etc/nginx/sites-available/{{ item }}
+    dest: /etc/nginx/sites-enabled/{{ item }}
     state: link
+  loop:
+    - netdata
+    - gh
   notify: Reload nginx

@@ -1,0 +1,33 @@
+#!/bin/zsh
+
+setopt err_return
+
+function err() {
+    print -u 2 "Error -> $*"
+    exit 127
+}
+
+webhook_dir=/var/github
+[[ ! -d $webhook_dir ]] && err "Webhook directory $webhook_directory is not a valid directory"
+
+archive=($webhook_dir/*(.om[1]))
+version=$(sed 's/^mfa-\(.*\).tar.zst/\1/' <<< ${archive:t})
+
+print "Installing $archive"
+cp $archive /tmp/
+
+tar -C /tmp -xf /tmp/${archive:t} ./share/ansible/deploy.yml --strip-components 3
+ansible-playbook -c local -i localhost, --extra-vars "version=$version" /tmp/deploy.yml
+
+token_file=/etc/mfa/twitter-token
+[[ ! -f $token_file ]] && err "Twitter token file $token_file does not exist"
+
+typeset -A opts
+opts=(${(@s.=.)$(< $token_file)})
+[[ -z $opts[access_token] ]] && err "Twitter access token missing from $token_file"
+
+sed -i "/^access_token/s/\".*\"/${opts[access_token]}/" /usr/local/lib/plt/mfa/**/.env
+
+# TODO: Parameterize email address
+mail -a 'From: Deployment <no-reply@{{ ansible_fqdn }}>' -s 'MFA app updated' \
+     {{ recipient_email }} <<< "Finished deployment of $archive at $(date --iso-8601=seconds)"

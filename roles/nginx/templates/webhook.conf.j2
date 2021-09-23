@@ -1,0 +1,11 @@
+server {
+    listen 81;
+    server_name {{ hostvars['gateway']['ansible_host'] }};
+
+    location /gh {
+        proxy_pass http://{{ appserver_address }}:8080/;
+        proxy_http_version 1.1;
+        proxy_pass_request_headers on;
+        proxy_cache off;
+    }
+}
