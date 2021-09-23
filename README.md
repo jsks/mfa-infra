@@ -1,6 +1,8 @@
 MFA Infrastructure
 ---
 
+![ci workflow](https://github.com/jsks/mfa-infra/actions/workflows/lint.yml/badge.svg)
+
 Orchestration code for MFA twitter scraping project.
 
 ### Requirements
