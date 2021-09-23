@@ -32,7 +32,7 @@
   become_user: postgres
   postgresql_user:
     name: "{{ pg_user }}"
-    password: "{{ lookup('community.general.passwordstore', 'dev/mfa-pg create=true') }}"
+    password: "{{ lookup('passwordstore', 'dev/mfa/postgres create=true') }}"
     conn_limit: 5
     role_attr_flags: CREATEDB,CREATEROLE,LOGIN
 
