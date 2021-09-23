@@ -1,6 +1,7 @@
 name: Racket compiler container image
-
 on:
+  schedule:
+    - cron: '43 6 11 */2 *'
   push:
     branches: [ master ]
     paths:
