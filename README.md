@@ -22,24 +22,32 @@ $ ssh-keygen -t ed25519 -f ~/.ssh/mfa_ed25519
 
 #### Password Management
 
-`pass(1)` is used as a vault for all generated secrets. If just
-getting started, create a gpg key and initialize the password store.
+`pass(1)` is used as a vault for all secrets. If just getting started,
+create a gpg key and initialize the password store.
 
 ```sh
 $ gpg --full-key-gen
 $ pass init <id | email>
 ```
 
-#### Wireguard VPN
-
-Public/private keys for both the server and client need to be
-generated for wireguard. The convenience script `wg_keys.sh` will
-generate all necessary keys and automatically insert them into the
-password store for later use by `ansible`.
+For full deployment, the following secrets are required:
 
 ```sh
-$ scripts/wg_keys.sh
+$ pass show dev/mfa
+dev/mfa
+├── gh-access-token    # GitHub access token from jsks/mfa-twitter
+├── gh-webhook-secret  # Webhook secret for notifications from jsks/mfa-twitter
+├── twitter-token      # Token for Twitter API
+├── wg-client          # Wireguard client credentials
+└── wg-server          # Wireguard server credentials
 ```
+
+The latter two for the Wireguard VPN can be created using the
+convenience script `scripts/wg_keys.sh`, which will generate all
+necessary keys and automatically insert them into the vault.
+
+Finally, ansible will also automatically generate credentials for
+Postgres and store them as `dev/mfa/postgres`.
 
 ### Resource Creation
 
@@ -79,5 +87,5 @@ and the [mfa-twitter](https://github.com/jsks/mfa-twitter) scraper
 
 The locally generated `client-wg0.conf` file holds the wireguard
 configuration for connecting to the `gateway` VPN. Simply insert the
-client private key from the vault, `pass show wg/mfa-client`, and copy
-the config file to `/etc/wireguard`.
+client private key from the vault, `pass show dev/mfa/wg-client`, and
+copy the config file to `/etc/wireguard`.
