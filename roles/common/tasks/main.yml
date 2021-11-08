@@ -1,7 +1,9 @@
 ---
+- name: Approve oldstable repo
+  command: apt-get update -y --allow-releaseinfo-change
+
 - name: Upgrade system
   apt:
-    update-cache: yes
     upgrade: yes
 
 - name: Install base packages
