@@ -1,5 +1,5 @@
 ---
-- name: Approve oldstable repo
+- name: Approve oldstable repo # noqa command-instead-of-module no-changed-when
   command: apt-get update -y --allow-releaseinfo-change
 
 - name: Upgrade system

@@ -1,4 +1,4 @@
 ---
-- include: install_postgres.yml
-- include: create_db.yml
-- include: pg_backup.yml
+- import_tasks: install_postgres.yml
+- import_tasks: create_db.yml
+- import_tasks: pg_backup.yml
