@@ -1,7 +1,7 @@
 # Container image for compiling racket source files
 FROM debian:buster-slim
 
-ARG RACKET_VERSION=8.1
+ARG RACKET_VERSION=8.4
 ARG CFLAGS="-O2 -march=x86-64 -mtune=generic -pipe -fno-plt"
 
 WORKDIR /usr/local/src
