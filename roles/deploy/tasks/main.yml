@@ -1,8 +1,10 @@
 ---
-- name: Install nodejs --- should already be a dependency of NetData
+- name: Install ansible & nodejs (should already be a dependency of NetData)
   apt:
     update_cache: yes
-    name: nodejs
+    pkg:
+      - ansible
+      - nodejs
 
 - name: Create webhook group
   group:
@@ -20,7 +22,9 @@
     name: /var/github
     state: directory
     owner: webhook
-    mode: u=rw,g=rw,o=r
+    group: webhook
+    mode: u=rwx,g=rwx,o=r
+    recurse: yes
 
 - name: Create config directories
   file:

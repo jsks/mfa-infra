@@ -1,4 +1,8 @@
 #!/bin/zsh
+#
+# Simple install script triggered by systemd.path when the webhook
+# server writes a release archive to '/var/github'
+###
 
 setopt err_return
 
@@ -7,12 +11,18 @@ function err() {
     exit 127
 }
 
+# Add a delay to allow webhook to finish writing to local zst
+# archive. This is not strictly necessary since systemd will probably
+# be triggered again by inotify anyways.
+sleep 2
+
 webhook_dir=/var/github
 [[ ! -d $webhook_dir ]] && err "Webhook directory $webhook_directory is not a valid directory"
 
-archive=($webhook_dir/*(.om[1]))
-version=$(sed 's/^mfa-\(.*\).tar.zst/\1/' <<< ${archive:t})
+archive=($webhook_dir/*(.Nom[1]))
+[[ -z $archive ]] && err "Unable to find any release archives"
 
+version=$(sed 's/^mfa-\(.*\).tar.zst/\1/' <<< ${archive:t})
 print "Installing $archive"
 cp $archive /tmp/
 
@@ -28,6 +38,5 @@ opts=(${(@s.=.)$(< $token_file)})
 
 sed -i "/^access_token/s/\".*\"/${opts[access_token]}/" /usr/local/lib/plt/mfa/**/.env
 
-# TODO: Parameterize email address
 mail -a 'From: Deployment <no-reply@{{ ansible_fqdn }}>' -s 'MFA app updated' \
      {{ recipient_email }} <<< "Finished deployment of $archive at $(date --iso-8601=seconds)"
